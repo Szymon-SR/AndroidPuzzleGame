@@ -12,7 +12,7 @@ import static java.lang.StrictMath.abs;
 public class TouchListener implements View.OnTouchListener {
     private float xDelta;
     private float yDelta;
-    private PuzzleActivity activity;
+    private final PuzzleActivity activity;
 
     public TouchListener(PuzzleActivity activity) {
         this.activity = activity;
