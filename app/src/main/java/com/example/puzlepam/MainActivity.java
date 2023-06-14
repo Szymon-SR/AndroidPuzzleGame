@@ -1,6 +1,7 @@
 package com.example.puzlepam;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
@@ -9,7 +10,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -43,13 +43,10 @@ public class MainActivity extends AppCompatActivity {
 
             GridView grid = findViewById(R.id.grid);
             grid.setAdapter(new ImageAdapter(this));
-            grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    Intent intent = new Intent(getApplicationContext(), PuzzleActivity.class);
-                    intent.putExtra("assetName", files[i % files.length]);
-                    startActivity(intent);
-                }
+            grid.setOnItemClickListener((adapterView, view, i, l) -> {
+                Intent intent = new Intent(getApplicationContext(), PuzzleActivity.class);
+                intent.putExtra("assetName", files[i % files.length]);
+                startActivity(intent);
             });
         } catch (IOException e) {
             Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
@@ -80,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE);
         } else {
             // Create an image file name
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             String imageFileName = "JPEG_" + timeStamp + "_";
             File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             File image = File.createTempFile(
@@ -99,13 +96,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    onImageFromCameraClick(new View(this));
-                }
-
-                return;
+        if (requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                onImageFromCameraClick(new View(this));
             }
         }
     }

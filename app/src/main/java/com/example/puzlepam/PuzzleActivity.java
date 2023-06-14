@@ -13,7 +13,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -50,29 +50,26 @@ public class PuzzleActivity extends AppCompatActivity {
 
         // run image related code after the view was laid out
         // to have all dimensions calculated
-        imageView.post(new Runnable() {
-            @Override
-            public void run() {
-                if (assetName != null) {
-                    setPicFromAsset(assetName, imageView);
-                } else if (mCurrentPhotoPath != null) {
-                    setPicFromPath(mCurrentPhotoPath, imageView);
-                } else if (mCurrentPhotoUri != null) {
-                    imageView.setImageURI(Uri.parse(mCurrentPhotoUri));
-                }
-                pieces = splitImage();
-                TouchListener touchListener = new TouchListener(PuzzleActivity.this);
-                // shuffle pieces order
-                Collections.shuffle(pieces);
-                for (PuzzlePiece piece : pieces) {
-                    piece.setOnTouchListener(touchListener);
-                    layout.addView(piece);
-                    // randomize position, on the bottom of the screen
-                    RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams) piece.getLayoutParams();
-                    lParams.leftMargin = new Random().nextInt(layout.getWidth() - piece.pieceWidth);
-                    lParams.topMargin = layout.getHeight() - piece.pieceHeight;
-                    piece.setLayoutParams(lParams);
-                }
+        imageView.post(() -> {
+            if (assetName != null) {
+                setPicFromAsset(assetName, imageView);
+            } else if (mCurrentPhotoPath != null) {
+                setPicFromPath(mCurrentPhotoPath, imageView);
+            } else if (mCurrentPhotoUri != null) {
+                imageView.setImageURI(Uri.parse(mCurrentPhotoUri));
+            }
+            pieces = splitImage();
+            TouchListener touchListener = new TouchListener(PuzzleActivity.this);
+            // shuffle pieces order
+            Collections.shuffle(pieces);
+            for (PuzzlePiece piece : pieces) {
+                piece.setOnTouchListener(touchListener);
+                layout.addView(piece);
+                // randomize position, on the bottom of the screen
+                RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams) piece.getLayoutParams();
+                lParams.leftMargin = new Random().nextInt(layout.getWidth() - piece.pieceWidth);
+                lParams.topMargin = layout.getHeight() - piece.pieceHeight;
+                piece.setLayoutParams(lParams);
             }
         });
     }
